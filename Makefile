@@ -13,3 +13,6 @@ package-install:
 
 lint:
 	poetry run flake8 gendiff
+
+test:
+	pytest -q gendiff/test/test.py

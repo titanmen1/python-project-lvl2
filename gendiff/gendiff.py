@@ -17,6 +17,7 @@ def main():
     file2 = json.load(args.__dict__['second_file'])
     diff = generate_diff(file1, file2)
     print(diff)
+    return diff
 
 
 def generate_diff(file1, file2):
