@@ -12,4 +12,3 @@ def read_data(path):
             return json.load(data_from_file)
         elif extension in ('.yml', '.yaml'):
             return yaml.safe_load(data_from_file)
-
