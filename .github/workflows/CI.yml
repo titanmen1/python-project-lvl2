@@ -48,7 +48,7 @@ jobs:
           make install
 
       - name: Test
-      - uses: paambaati/codeclimate-action@v2.7.5
+        uses: paambaati/codeclimate-action@v2.7.5
         env:
           TEST_REPORTER_ID: {{ secrets.TEST_REPORTER_ID }}
         with:
