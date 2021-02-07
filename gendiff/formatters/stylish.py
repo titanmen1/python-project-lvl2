@@ -1,17 +1,20 @@
+"""Func for formatting diff in stylish format."""
+from gendiff.consts import STATUS, VALUE
+
+
 def to_string(diff):
-    """
-     representation for key values,
-     that are not dictionary
-    Parameters:
-        diff: difference that are not dictionary
-    Return:
-        string format for 'None" and boolean
-        string as string, and numbers
+    """Func for convert diff to string.
+
+    Args:
+        diff: value.
+
+    Returns:
+        Value convert in string.
     """
     if diff is None:
         return 'null'
 
-    if type(diff) == bool:
+    if isinstance(diff, bool):
         string = str(diff)
         return string.lower()
 
@@ -19,12 +22,20 @@ def to_string(diff):
 
 
 def render_stylish(diff, indent=0):
+    """Render diff in stylish format.
 
-    if type(diff) != dict:
+    Args:
+        diff: Dictionary with the diff result rows.
+        indent: indent in line.
+
+    Returns:
+        String of diff rows, formatted as a stylish.
+    """
+    if not isinstance(diff, diff):
         return to_string(diff)
 
     step = ' ' * indent
-    result = ['{']
+    result_render = ['{']
 
     if indent == 0:
         keys = sorted(diff.keys())
@@ -34,21 +45,40 @@ def render_stylish(diff, indent=0):
     indent = indent + 4
 
     for key in keys:
-        if diff[key]['status'] == 'added':
-            string = "{0}  + {1}: {2}".format(step, key, render_stylish(diff[key]['value'], indent))
-        if diff[key]['status'] == 'deleted':
-            string = "{0}  - {1}: {2}".format(step, key, render_stylish(diff[key]['value'], indent))
-        if diff[key]['status'] == 'unchanged':
-            string = "{0}    {1}: {2}".format(step, key, render_stylish(diff[key]['value'], indent))
-        if diff[key]['status'] == 'replaced':
-            string = "{0}  - {1}: {2}" \
-                     "\n{3}  + {4}: {5}"\
-                .format(step, key, render_stylish(diff[key]['value'], indent), step, key,
-                        render_stylish(diff[key]['value2'], indent))
-        if diff[key]['status'] == 'changed':
-            string = "{0}    {1}: {2}".format(step, key, render_stylish(diff[key]['value'], indent))
-        result.append(string)
+        if diff[key][STATUS] == 'added':
+            string = '{0}  + {1}: {2}'.format(step, key, render_stylish(
+                diff[key][VALUE],
+                indent,
+            ),
+            )
+        if diff[key][STATUS] == 'deleted':
+            string = '{0}  - {1}: {2}'.format(step, key, render_stylish(
+                diff[key][VALUE],
+                indent,
+            ),
+            )
+        if diff[key][STATUS] == 'unchanged':
+            string = '{0}    {1}: {2}'.format(step, key, render_stylish(
+                diff[key][VALUE],
+                indent,
+            ),
+            )
+        if diff[key][STATUS] == 'replaced':
+            string = '{0}  - {1}: {2}\n{3}  + {4}: {5}'.format(
+                step,
+                key,
+                render_stylish(diff[key][VALUE], indent),
+                step,
+                key,
+                render_stylish(diff[key]['value2'], indent),
+            )
+        if diff[key][STATUS] == 'changed':
+            string = '{0}    {1}: {2}'.format(step, key, render_stylish(
+                diff[key][VALUE],
+                indent,
+            ),
+            )
+        result_render.append(string)
 
-    result.append('{0}}}'.format(step))
-    return '\n'.join(result)
-
+    result_render.append('{0}}}'.format(step))
+    return '\n'.join(result_render)
