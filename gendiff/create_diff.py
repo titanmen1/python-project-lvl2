@@ -12,7 +12,7 @@ def create_diff(data1, data2=None):
     Returns:
         Diff of the given dictionaries.
     """
-    if not isinstance(data1, data1):
+    if not isinstance(data1, dict):
         return data1
 
     if data2 is None:
