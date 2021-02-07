@@ -2,6 +2,7 @@
 """Main script."""
 import argparse
 import json
+from gendiff.read_data import read_data
 
 
 def main():
@@ -29,31 +30,11 @@ def generate_diff(file1, file2):
     Returns:
         diff as str
     """
-    key_list = list(file1.keys())
-    key_list.extend(list(filter(
-        lambda key: key not in key_list,
-        list(file2.keys()),
-    )))
-    res = '{\n'
+    data1 = read_data(file1)
+    data2 = read_data(file2)
+    diff = compare(data_collection1, data_collection2)
 
-    for key in sorted(key_list):
-        item_for_file1 = file1.get(key)
-        item_for_file2 = file2.get(key)
-        if item_for_file1 is None:
-            res += '  {0} {1}: {2}\n'.format('+', key, item_for_file2)
-            continue
-        if item_for_file2 is None:
-            res += '  {0} {1}: {2}\n'.format('-', key, item_for_file1)
-            continue
-        if item_for_file1 == item_for_file2:
-            res += '    {0}: {1}\n'.format(key, item_for_file1)
-            continue
-        if item_for_file1 != item_for_file2:
-            res += '  {0} {1}: {2}\n'.format('-', key, item_for_file1)
-            res += '  {0} {1}: {2}\n'.format('+', key, item_for_file2)
-
-    res += '}'
-    return res
+    return format_diff(diff, format_name)
 
 
 if __name__ == '__main__':
