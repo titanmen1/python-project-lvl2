@@ -11,6 +11,9 @@ publish:
 package-install:
 	python -m pip install dist/*.whl
 
+package-remove:
+	python -m pip uninstall hexlet-code
+
 lint:
 	poetry run flake8 gendiff
 

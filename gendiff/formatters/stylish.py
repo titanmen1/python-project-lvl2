@@ -31,7 +31,7 @@ def render_stylish(diff, indent=0):
     Returns:
         String of diff rows, formatted as a stylish.
     """
-    if not isinstance(diff, diff):
+    if not isinstance(diff, dict):
         return to_string(diff)
 
     step = ' ' * indent
