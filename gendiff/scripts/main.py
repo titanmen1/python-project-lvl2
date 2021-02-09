@@ -1,7 +1,7 @@
 """Main script."""
 import argparse
 
-from gendiff.gendiff import generate_diff
+from gendiff import gendiff
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
         help='set format of output',
     )
     args = parser.parse_args()
-    diff = generate_diff(args.first_file, args.second_file, args.format)
+    diff = gendiff.generate_diff(args.first_file, args.second_file, args.format)
     print(diff)
 
 
