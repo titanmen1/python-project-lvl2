@@ -31,14 +31,14 @@ def render_plain(diff):
     children = diff.get("children")
 
     if diff_type == 'origin':
-        rows = [format(child) for child in children]
+        rows = [render_plain(child) for child in children]
         return '\n'.join(flat_list(rows))
 
     if diff_type == "nested":
         rows = []
         for child in children:
             child["key"] = f'{key}.{child["key"]}'
-            rows.append(format(child))
+            rows.append(render_plain(child))
         return rows
 
     if diff_type == "added":
