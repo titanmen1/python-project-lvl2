@@ -1,22 +1,10 @@
 """Main script."""
-import argparse
-
-from gendiff import gendiff
+from gendiff import gendiff, arg_parser
 
 
 def main():
     """Start main script."""
-    parser = argparse.ArgumentParser(description='Generate diff')
-    parser.add_argument('first_file', type=str)
-    parser.add_argument('second_file', type=str)
-    parser.add_argument(
-        '-f',
-        '--format',
-        dest='format',
-        action='store',
-        help='set format of output',
-    )
-    args = parser.parse_args()
+    args = arg_parser.parse()
     diff = gendiff.generate_diff(args.first_file, args.second_file, args.format)
     print(diff)
 
