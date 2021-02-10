@@ -1,5 +1,5 @@
 """Main script."""
-from gendiff import gendiff, arg_parser
+from gendiff import arg_parser, gendiff
 
 
 def main():
