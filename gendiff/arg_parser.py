@@ -8,8 +8,7 @@ def parse():
     parser.add_argument(
         '-f',
         '--format',
-        dest='format',
-        action='store',
         help='set format of output',
+        default='stylish'
     )
     return parser.parse_args()
