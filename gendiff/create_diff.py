@@ -20,36 +20,49 @@ def create_diff(data1, data2=None):
 
     keys = create_list_keys(data1, data2)
 
-    result_diff = {}
-
+    result_diff = []
     for key in sorted(keys):
-        if key in data1 and key not in data2:
-            result_diff[key] = {
-                STATUS: 'deleted',
-                VALUE: create_diff(data1[key]),
-            }
-        elif key in data2 and key not in data1:
-            result_diff[key] = {
-                STATUS: 'added',
-                VALUE: create_diff(data2[key]),
-            }
-        else:
-            if not isinstance(data1[key], dict) or not isinstance(data2[key], dict):  # noqa: E501
-                result_diff[key] = {
-                    STATUS: 'replaced',
-                    VALUE: create_diff(data1[key]),
-                    'value2': create_diff(data2[key]),
-                }
-            elif data1[key] == data2[key]:
-                result_diff[key] = {
-                    STATUS: 'unchanged',
-                    VALUE: create_diff(data1[key]),
-                }
-            else:
-                result_diff[key] = {
-                    STATUS: 'changed',
-                    VALUE: create_diff(data1[key], data2[key]),
-                }
+        if key not in data1:
+            result_diff.append({
+                'type': "added",
+                'key': key,
+                'value': data2[key]
+            })
+            continue
+
+        if key not in data2:
+            result_diff.append({
+                'type': "removed",
+                'key': key,
+                'value': data1[key]
+            })
+            continue
+
+        if isinstance(
+                data1[key],
+                dict
+        ) and isinstance(data2[key], dict):
+            result_diff.append({
+                'type': "nested",
+                'key': key,
+                'children': create_diff(data1[key], data2[key])
+            })
+            continue
+
+        if data1[key] != data2[key]:
+            result_diff.append({
+                'type': "updated",
+                'key': key,
+                'old_value': data1[key],
+                'new_value': data2[key]
+            })
+            continue
+
+        result_diff.append({
+            'type': "unchanged",
+            'key': key,
+            'value': data1[key]
+        })
 
     return result_diff
 
@@ -68,3 +81,10 @@ def create_list_keys(dict1, dict2):
     keys2 = list(dict2.keys())
 
     return keys1 if (dict1 == dict2) else set(keys1 + keys2)
+
+
+def build_diff(data1, data2):
+    return {
+        'type': "origin",
+        'children': create_diff(data1, data2)
+    }

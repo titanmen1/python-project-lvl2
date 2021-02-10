@@ -1,27 +1,34 @@
 """Func for formatting diff in stylish format."""
 from gendiff.consts import STATUS, VALUE
 
-
-def to_string(diff):
-    """Func for convert diff to string.
-
-    Args:
-        diff: value.
-
-    Returns:
-        Value convert in string.
-    """
-    if diff is None:
-        return 'null'
-
-    if isinstance(diff, bool):
-        string = str(diff)
-        return string.lower()
-
-    return diff
+INDENT_TYPE = " "
+INDENT_SIZE = 4
 
 
-def render_stylish(diff, indent=0):
+def stringify(value, depth):
+    if value is None:
+        return "null"
+
+    if isinstance(value, bool):
+        return str(value).lower()
+
+    if isinstance(value, dict):
+        result = []
+        indent = make_indent(depth + 1)
+        for key, value in value.items():
+            str_value = stringify(value, depth + 1)
+            result.append(
+                f'{indent}    {key}: {str_value}\n')
+        return f'{{\n{"".join(result)}{indent}}}'
+
+    return value
+
+
+def make_indent(depth, indent_size=INDENT_SIZE, indent_type=INDENT_TYPE):
+    return indent_type * indent_size * depth
+
+
+def render_stylish(diff, depth=0):
     """Render diff in stylish format.
 
     Args:
@@ -31,54 +38,39 @@ def render_stylish(diff, indent=0):
     Returns:
         String of diff rows, formatted as a stylish.
     """
-    if not isinstance(diff, dict):
-        return to_string(diff)
+    diff_type = diff["type"]
+    key = diff.get("key")
+    indent = make_indent(depth)
+    children = diff.get('children')
 
-    step = ' ' * indent
-    result_render = ['{']
+    if diff_type == "origin":
+        rows = [f'{indent}{render_stylish(child, depth)}\n' for child in children]
+        return f'{{\n{"".join(rows)}}}'
 
-    if indent == 0:
-        keys = sorted(diff.keys())
-    else:
-        keys = diff.keys()
+    if diff_type == "nested":
+        rows = [f'{render_stylish(child, depth + 1)}\n' for child in children]
+        result = "".join(rows)
+        return (
+            f'{indent}    {key}: {{\n{result}{make_indent(depth + 1)}}}'
+        )
 
-    indent = indent + 4
+    if diff_type == "added":
+        return (
+            f'{indent}  + {key}: {stringify(diff["value"], depth)}'
+        )
 
-    for key in keys:
-        if diff[key][STATUS] == 'added':
-            string = '{0}  + {1}: {2}'.format(step, key, render_stylish(
-                diff[key][VALUE],
-                indent,
-            ),
-            )
-        if diff[key][STATUS] == 'deleted':
-            string = '{0}  - {1}: {2}'.format(step, key, render_stylish(
-                diff[key][VALUE],
-                indent,
-            ),
-            )
-        if diff[key][STATUS] == 'unchanged':
-            string = '{0}    {1}: {2}'.format(step, key, render_stylish(
-                diff[key][VALUE],
-                indent,
-            ),
-            )
-        if diff[key][STATUS] == 'replaced':
-            string = '{0}  - {1}: {2}\n{3}  + {4}: {5}'.format(
-                step,
-                key,
-                render_stylish(diff[key][VALUE], indent),
-                step,
-                key,
-                render_stylish(diff[key]['value2'], indent),
-            )
-        if diff[key][STATUS] == 'changed':
-            string = '{0}    {1}: {2}'.format(step, key, render_stylish(
-                diff[key][VALUE],
-                indent,
-            ),
-            )
-        result_render.append(string)
+    if diff_type == "removed":
+        return (
+            f'{indent}  - {key}: {stringify(diff["value"], depth)}'
+        )
 
-    result_render.append('{0}}}'.format(step))
-    return '\n'.join(result_render)
+    if diff_type == "updated":
+        return '\n'.join([
+            f'{indent}  - {key}: {stringify(diff["old_value"], depth)}',
+            f'{indent}  + {key}: {stringify(diff["new_value"], depth)}'
+        ])
+
+    if diff_type == "unchanged":
+        return (
+            f'{indent}    {key}: {stringify(diff["value"], depth)}'
+        )

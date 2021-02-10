@@ -1,69 +1,61 @@
 """Func for formatting diff in plain format."""
 from gendiff.consts import STATUS, VALUE
 
-TEMP_ADD = 'Property {0} was added with value: {1}'
-TEMP_REM = 'Property {0} was removed'
-TEMP_UPD = 'Property {0} was updated. From {1} to {2}'
+def stringify(value):
+    if isinstance(value, dict):
+        return "[complex value]"
+
+    if isinstance(value, str):
+        return f"'{value}'"
+
+    if value is None:
+        return "null"
+
+    return str(value).lower()
 
 
-def to_string(value_to_str):
-    """Func for convert value to string.
+def flat_list(items):
+    flatten_rows = []
 
-    Args:
-        value_to_str: value.
+    if type(items) != list:
+        return [items]
+    for item in items:
+        flatten_rows.extend(flat_list(item))
 
-    Returns:
-        Value convert in string.
-    """
-    if isinstance(value_to_str, (dict, list)):
-        return '[complex value]'
-    if isinstance(value_to_str, bool):
-        return str(value_to_str).lower()
-    if value_to_str is None:
-        return 'null'
-    if isinstance(value_to_str, str):
-        return "'{0}'".format(value_to_str)
-    return value_to_str
+    return flatten_rows
 
 
-def render_plain(diff, path=''):
-    """Render diff in plain format.
+def render_plain(diff):
+    diff_type = diff["type"]
+    key = diff.get("key")
+    children = diff.get("children")
 
-    Args:
-        diff: Dictionary with the diff result rows.
-        path: path in dictionary to diff.
+    if diff_type == 'origin':
+        rows = [format(child) for child in children]
+        return '\n'.join(flat_list(rows))
 
-    Returns:
-        String of diff rows, formatted as a plain.
-    """
-    keys = sorted(diff.keys())
-    result_render = []
+    if diff_type == "nested":
+        rows = []
+        for child in children:
+            child["key"] = f'{key}.{child["key"]}'
+            rows.append(format(child))
+        return rows
 
-    for key in keys:
-        path_to_value = path + key
-        if diff[key][STATUS] == 'unchanged':
-            continue
-        elif diff[key][STATUS] == 'changed':
-            string = render_plain(
-                diff[key][VALUE],
-                '{0}.'.format(path_to_value),
-            )
-        else:
-            status = diff[key][STATUS]
-            if status == 'added':
-                string = TEMP_ADD.format(
-                    path_to_value,
-                    to_string(diff[key][VALUE]),
-                )
-            if status == 'replaced':
-                string = TEMP_REM.format(path_to_value)
-            if status == 'replaced':
-                string = TEMP_UPD.format(
-                    path_to_value,
-                    to_string(diff[key][VALUE]),
-                    to_string(diff[key]['value2']),
-                )
+    if diff_type == "added":
+        value = stringify(diff['value'])
+        return (
+            f"Property '{key}' was added with value: {value}"
+        )
 
-        result_render.append(string)
+    if diff_type == "removed":
+        return f"Property '{key}' was removed"
 
-    return '\n'.join(result_render)
+    if diff_type == "updated":
+        value = stringify(diff['old_value'])
+        new_value = stringify(diff['new_value'])
+        return (
+            f"Property '{key}' was updated. From {value} to {new_value}"
+        )
+
+    if diff_type == "unchanged":
+        return []
