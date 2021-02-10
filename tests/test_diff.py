@@ -11,7 +11,7 @@ def test_gendiff_json():
 def test_gendiff_input_yaml():
     file1 = './tests/fixtures/file1.yml'
     file2 = './tests/fixtures/file2.yml'
-    output = './tests/fixtures/output.yml'
+    output = './tests/fixtures/output_for_yml.json'
     assert generate_diff(file1, file2, 'json') == open(output, 'r').read()
 
 
@@ -20,3 +20,10 @@ def test_gendiff_output_format_plain():
     file2 = './tests/fixtures/file2.yml'
     output = './tests/fixtures/test_plain'
     assert generate_diff(file1, file2, 'plain') == open(output, 'r').read()
+
+
+def test_gendiff_output_format_stylish():
+    file1 = './tests/fixtures/file1.yml'
+    file2 = './tests/fixtures/file2.yml'
+    output = './tests/fixtures/test_stylish'
+    assert generate_diff(file1, file2) == open(output, 'r').read()

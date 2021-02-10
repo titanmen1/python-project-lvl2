@@ -43,16 +43,12 @@
           "key": "setting6",
           "children": [
             {
-              "type": "nested",
+              "type": "updated",
               "key": "doge",
-              "children": [
-                {
-                  "type": "updated",
-                  "key": "wow",
-                  "old_value": "",
-                  "new_value": "so much"
-                }
-              ]
+              "old_value": null,
+              "new_value": {
+                "wow": "so much"
+              }
             },
             {
               "type": "unchanged",
@@ -107,12 +103,12 @@
       "type": "added",
       "key": "group3",
       "value": {
+        "fee": 100500,
         "deep": {
           "id": {
             "number": 45
           }
-        },
-        "fee": 100500
+        }
       }
     }
   ]
