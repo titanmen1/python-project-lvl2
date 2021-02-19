@@ -1,5 +1,5 @@
 """Func for formatting diff in plain format."""
-from gendiff.create_diff import (
+from gendiff.diff import (
     ADDED,
     CHILDREN,
     KEY,

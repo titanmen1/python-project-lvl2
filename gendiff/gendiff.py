@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Main script."""
-from gendiff.create_diff import build_diff
+from gendiff.diff import build_diff
 from gendiff.formatters.format import format_diff
 from gendiff.read_data import read_data
 
