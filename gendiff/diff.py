@@ -1,19 +1,18 @@
 """File with func for create diff."""
-from gendiff.consts import (
-    ADDED,
-    CHILDREN,
-    KEY,
-    NESTED,
-    ORIGIN,
-    REMOVED,
-    TYPE,
-    UNCHANGED,
-    UPDATED,
-    VALUE,
-)
+
+ADDED = 'added'
+CHILDREN = 'children'
+KEY = 'key'
+NESTED = 'nested'
+ORIGIN = 'origin'
+REMOVED = 'removed'
+TYPE = 'type'
+UNCHANGED = 'unchanged'
+UPDATED = 'updated'
+VALUE = 'value'
 
 
-def create_diff(data1, data2=None):
+def create(data1, data2=None):
     """Create a diff for a given dictionaries.
 
     Args:
@@ -54,7 +53,7 @@ def create_diff(data1, data2=None):
                 result_diff.append({
                     TYPE: NESTED,
                     KEY: key,
-                    CHILDREN: create_diff(data1[key], data2[key]),
+                    CHILDREN: create(data1[key], data2[key]),
                 })
                 continue
 
@@ -104,5 +103,5 @@ def build_diff(data1, data2):
     """
     return {
         TYPE: ORIGIN,
-        CHILDREN: create_diff(data1, data2),
+        CHILDREN: create(data1, data2),
     }

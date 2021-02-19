@@ -1,9 +1,7 @@
 """Func for formatting diff in stylish format."""
-from gendiff.consts import (
+from gendiff.create_diff import (
     ADDED,
     CHILDREN,
-    INDENT_SIZE,
-    INDENT_TYPE,
     KEY,
     NESTED,
     ORIGIN,
@@ -12,6 +10,9 @@ from gendiff.consts import (
     UNCHANGED,
     UPDATED,
 )
+
+INDENT_TYPE = ' '
+INDENT_SIZE = 4
 
 
 def to_string(value_to_str, depth):

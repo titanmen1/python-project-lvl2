@@ -43,16 +43,11 @@
           "key": "setting6",
           "children": [
             {
-              "type": "nested",
+              "type": "added",
               "key": "doge",
-              "children": [
-                {
-                  "type": "updated",
-                  "key": "wow",
-                  "old_value": "",
-                  "new_value": "so much"
-                }
-              ]
+              "value": {
+                "wow": "so much"
+              }
             },
             {
               "type": "unchanged",
